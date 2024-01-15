@@ -6,25 +6,26 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.io.IOException;
 
+import io.netty.channel.SimpleChannelInboundHandler;
 import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 import jazmin.server.msg.codec.ResponseMessage;
 /**
- * 
+ *
  * @author yama
  * 23 Dec, 2014
  */
 @Sharable
-public class MessageClientHandler extends ChannelHandlerAdapter{
+public class MessageClientHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(MessageClientHandler.class);
 	private MessageClient messageClient;
     /**
      */
     public MessageClientHandler(MessageClient messageClient) {
     	this.messageClient=messageClient;
- 	}	
+ 	}
     /**
-     * 
+     *
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -33,33 +34,39 @@ public class MessageClientHandler extends ChannelHandlerAdapter{
     	}
     }
     /**
-     * 
+     *
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
     	if(logger.isInfoEnabled()){
-			logger.info("message client registered.{}",ctx.channel());		
-		}	
+			logger.info("message client registered.{}",ctx.channel());
+		}
     }
     /**
-     * 
+     *
      */
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) 
+    public void channelRead(ChannelHandlerContext ctx, Object msg)
     		throws Exception {
     	ResponseMessage rspMessage=(ResponseMessage)msg;
     	messageClient.messageRecieved(rspMessage);
     }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        channelRead(channelHandlerContext,o);
+    }
+
     /**
-     * 
+     *
      */
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) 
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
     		throws Exception {
     	if(cause instanceof IOException){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
         ctx.close();
     }

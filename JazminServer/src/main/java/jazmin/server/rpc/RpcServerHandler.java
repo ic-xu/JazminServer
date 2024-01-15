@@ -4,6 +4,7 @@ package jazmin.server.rpc;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
@@ -18,7 +19,7 @@ import jazmin.log.LoggerFactory;
  * @date Jun 4, 2014
  */
 @Sharable
-public class RpcServerHandler extends ChannelHandlerAdapter{
+public class RpcServerHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(RpcServerHandler.class);
 	private static final AttributeKey<RpcSession> SESSION_KEY=
 											AttributeKey.valueOf("rpcsession");
@@ -35,32 +36,38 @@ public class RpcServerHandler extends ChannelHandlerAdapter{
 		rpcServer.sessionDestroyed(session);
 	}
 	/*
-	 * 
+	 *
 	 */
 	@Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) 
+    public void channelRead(ChannelHandlerContext ctx, Object msg)
     		throws Exception {
 		RpcMessage rpcMessage=(RpcMessage) msg;
 		RpcSession session=ctx.channel().attr(SESSION_KEY).get();
 		session.receivePackage(rpcMessage);
 		rpcServer.messageReceived(session, rpcMessage);
 	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+		channelRead(channelHandlerContext,o);
+	}
+
 	/*
-	 * 
+	 *
 	 */
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
 			throws Exception {
-		if(evt instanceof IdleStateEvent){  
+		if(evt instanceof IdleStateEvent){
 			RpcSession session=ctx.channel().attr(SESSION_KEY).get();
 			if(logger.isWarnEnabled()){
 				logger.warn("close idle session:{}",session);
 			}
 			ctx.close();
-		}    
+		}
 	}
 	/*
-     * 
+     *
      */
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -71,15 +78,15 @@ public class RpcServerHandler extends ChannelHandlerAdapter{
 		rpcServer.checkSession(session);
 	}
     /*
-     * 
+     *
      */
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) 
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
     		throws Exception {
     	if((cause instanceof IOException)||(cause instanceof DecoderException)){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
         ctx.close();
     }

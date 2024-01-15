@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.driver.redis;
 
@@ -56,7 +56,7 @@ public class RedisDriver extends Driver{
 		info.setPassword(password);
 		shardInfos.add(info);
 	}
-	
+
 	//
 	/**
 	 * @return
@@ -207,7 +207,7 @@ public class RedisDriver extends Driver{
 		return threadConn.getName();
 	}
 	//--------------------------------------------------------------------------
-	
+
 	static class AutoTranscationCallback extends DispatcherCallbackAdapter{
 		RedisDriver connectionDriver;
 		public AutoTranscationCallback(RedisDriver cd) {
@@ -259,8 +259,8 @@ public class RedisDriver extends Driver{
 		ib.section("shards");
 		int index=0;
 		for(JedisShardInfo s:shardInfos){
-			ib.print("shard-"+(index++),s.getHost()+":"+s.getPort()+"/"+s.getName());						
-		}	
+			ib.print("shard-"+(index++),s.getHost()+":"+s.getPort()+"/"+s.getName());
+		}
 		//
 		return ib.toString();
 	}

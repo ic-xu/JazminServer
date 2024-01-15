@@ -9,7 +9,7 @@ import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 
 /**
- * 
+ *
  * @author yama
  *
  */
@@ -22,7 +22,7 @@ public class FileServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 	}
 	//
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, HttpObject request) 
+    public void channelRead0(ChannelHandlerContext ctx, HttpObject request)
     		throws Exception {
     	fileServer.processRequest(ctx, request);
     }

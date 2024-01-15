@@ -3,24 +3,20 @@ package jazmin.server.mysqlproxy;
 import java.util.Base64;
 import java.util.Date;
 
+import io.netty.channel.*;
 import org.bouncycastle.util.Arrays;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
 import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 import jazmin.server.mysqlproxy.mysql.protocol.HandshakePacket;
 /**
- * 
+ *
  * @author yama
  *
  */
-public class ProxyBackendHandler extends ChannelHandlerAdapter {
+public class ProxyBackendHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(ProxyFrontendHandler.class);
 	//
     private final Channel inboundChannel;
@@ -53,7 +49,7 @@ public class ProxyBackendHandler extends ChannelHandlerAdapter {
         	session.id=Base64.getEncoder().encodeToString(handshake.seed);
         	session.createTime=new Date();
         	session.lastAccTime=new Date();
-        	
+
         	session.remoteHost=rule.remoteHost;
         	session.remotePort=rule.remotePort;
         	session.localPort=rule.localPort;
@@ -64,10 +60,16 @@ public class ProxyBackendHandler extends ChannelHandlerAdapter {
         if(frontendHander.session!=null){
         	frontendHander.session.packetCount++;
         }
-       
+
         writeToFrontend(ctx, packet);
-        
+
     }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        channelRead(channelHandlerContext,o);
+    }
+
     //
     private void writeToFrontend(ChannelHandlerContext ctx, byte[] packet) {
     	ByteBuf buffer = ctx.alloc().buffer(packet.length);
@@ -90,10 +92,10 @@ public class ProxyBackendHandler extends ChannelHandlerAdapter {
         	logger.debug("disconnect from backend {}",ctx.channel());
         }
     	if(frontendHander.session!=null){
-    		server.removeSession(frontendHander.session.id);	
+    		server.removeSession(frontendHander.session.id);
     	}
     	ProxyFrontendHandler.closeOnFlush(inboundChannel);
-       
+
     }
 
     @Override

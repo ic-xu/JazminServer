@@ -55,7 +55,7 @@ public class SipWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 		this.server=server;
 	}
 
-	@Override
+
 	public void messageReceived(ChannelHandlerContext ctx, Object msg) throws IOException {
 		SipChannel c=ctx.channel().attr(SipChannel.SESSION_KEY).get();
 		c.messageReceivedCount++;
@@ -89,7 +89,7 @@ public class SipWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 		// Handshake
 		WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
 				getWebSocketLocation(req), "sip", true,MAX_WEBSOCKET_FRAME_SIZE);
-		
+
 		handshaker = wsFactory.newHandshaker(req);
 		if (handshaker == null) {
 			WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
@@ -98,7 +98,7 @@ public class SipWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 		}
 	}
 
-	private void handleWebSocketFrame(ChannelHandlerContext ctx,WebSocketFrame frame) 
+	private void handleWebSocketFrame(ChannelHandlerContext ctx,WebSocketFrame frame)
 			throws IOException {
 		// Check for closing frame
 		if (frame instanceof CloseWebSocketFrame) {
@@ -129,7 +129,7 @@ public class SipWebSocketHandler extends SimpleChannelInboundHandler<Object> {
         		ctx.channel(),
         		(InetSocketAddress) ctx.channel().remoteAddress());
         final SipMessageEvent event = new DefaultSipMessageEvent(
-        		connection, 
+        		connection,
         		sipMessage,
         		clock.getCurrentTimeMillis());
         server.messageReceived(event.getConnection(),event.getMessage());
@@ -166,16 +166,16 @@ public class SipWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 
 	//
 	@Override
-    public void channelInactive(ChannelHandlerContext ctx) 
+    public void channelInactive(ChannelHandlerContext ctx)
     		throws Exception {
 		server.removeChannel(ctx.channel().id().asShortText());
 		if(logger.isDebugEnabled()){
-			logger.debug("channelInactive:"+ctx.channel());	
+			logger.debug("channelInactive:"+ctx.channel());
 		}
 	}
 	//
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) 
+	public void channelActive(ChannelHandlerContext ctx)
 			throws Exception {
 		SipChannel channel=new SipChannel();
 		channel.id=ctx.channel().id().asShortText();
@@ -190,13 +190,18 @@ public class SipWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 		server.addChannel(channel);
 		ctx.channel().attr(SipChannel.SESSION_KEY).set(channel);
 		if(logger.isDebugEnabled()){
-			logger.debug("channelActive:"+ctx.channel());	
+			logger.debug("channelActive:"+ctx.channel());
 		}
 	}
 	//
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
 			throws Exception {
-		logger.debug("userEventTriggered:"+ctx.channel());	
+		logger.debug("userEventTriggered:"+ctx.channel());
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+		messageReceived(channelHandlerContext,o);
 	}
 }

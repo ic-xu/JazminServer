@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.server.relay.tcp;
 
@@ -23,12 +23,12 @@ public class TCPUnicastRelayChannelHandler extends SimpleChannelInboundHandler<B
 	private static Logger logger=LoggerFactory.get(RelayChannel.class);
 	//
 	TCPUnicastRelayChannel relayChannel;
-	
+
 	public TCPUnicastRelayChannelHandler(TCPUnicastRelayChannel relayChannel) {
 		this.relayChannel=relayChannel;
 	}
 	//
-	@Override
+
 	protected void messageReceived(ChannelHandlerContext ctx,
 			ByteBuf buffer) throws Exception {
 		ByteBuf buf= Unpooled.copiedBuffer(buffer);
@@ -43,7 +43,7 @@ public class TCPUnicastRelayChannelHandler extends SimpleChannelInboundHandler<B
 		if(cause instanceof IOException){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
 	}
 	//
@@ -60,5 +60,10 @@ public class TCPUnicastRelayChannelHandler extends SimpleChannelInboundHandler<B
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		relayChannel.remoteAddress=null;
 		logger.info("channel inactive :"+ctx.channel());
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+		messageReceived(channelHandlerContext,byteBuf);
 	}
 }

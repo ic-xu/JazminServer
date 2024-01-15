@@ -20,12 +20,12 @@ public class RtmpServerTest {
     public static void main(String[] args) throws Exception{
     	//
     	LoggerFactory.setLevel("DEBUG");
-    	RtmpServer rtmpServer=new RtmpServer();
-    	//rtmpServer.setServerHome("/tmp/rtmp/");
-    	
-    	//
-		Jazmin.addServer(rtmpServer);
-		Jazmin.addServer(new ConsoleServer());
+//    	RtmpServer rtmpServer=new RtmpServer();
+//    	//rtmpServer.setServerHome("/tmp/rtmp/");
+//
+//    	//
+//		Jazmin.addServer(rtmpServer);
+//		Jazmin.addServer(new ConsoleServer());
 		Jazmin.start();
 	}
 }

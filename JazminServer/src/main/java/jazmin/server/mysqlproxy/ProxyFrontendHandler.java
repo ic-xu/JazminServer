@@ -3,12 +3,7 @@ package jazmin.server.mysqlproxy;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.*;
 
 import java.nio.ByteBuffer;
 
@@ -18,11 +13,11 @@ import jazmin.server.mysqlproxy.MySQLProxyServer.ProxyServerBackendChannelInitia
 import jazmin.server.mysqlproxy.mysql.protocol.AuthPacket;
 import jazmin.server.mysqlproxy.mysql.protocol.Capabilities;
 /**
- * 
+ *
  * @author yama
  *
  */
-public class ProxyFrontendHandler extends ChannelHandlerAdapter {
+public class ProxyFrontendHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(ProxyFrontendHandler.class);
     private volatile Channel outboundChannel;
     private MySQLProxyServer server;
@@ -103,8 +98,14 @@ public class ProxyFrontendHandler extends ChannelHandlerAdapter {
     	if(session!=null){
     		session.packetCount++;
         }
-        writeToBackend(ctx, packet); 	
+        writeToBackend(ctx, packet);
     }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        channelRead(channelHandlerContext,o);
+    }
+
     //
     private void writeToBackend(ChannelHandlerContext ctx, byte[] packet) {
     	ByteBuf buffer = ctx.alloc().buffer(packet.length);
@@ -128,7 +129,7 @@ public class ProxyFrontendHandler extends ChannelHandlerAdapter {
         	logger.debug("disconnect from frontend {}",ctx.channel());
         }
     	if(session!=null){
-    		server.removeSession(session.id);	
+    		server.removeSession(session.id);
     	}
     	if (outboundChannel != null) {
             closeOnFlush(outboundChannel);

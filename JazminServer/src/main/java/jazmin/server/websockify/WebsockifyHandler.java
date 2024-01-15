@@ -48,7 +48,7 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 		this.isWss=isWss;
 	}
 
-	@Override
+
 	public void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception{
 		if (msg instanceof FullHttpRequest) {
 			handleHttpRequest(ctx, (FullHttpRequest) msg);
@@ -78,7 +78,7 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 			return;
 		}
 		if ("/favicon.ico".equals(req.uri())) {
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, 
+            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1,
             		HttpResponseStatus.NOT_FOUND);
             sendHttpResponse(ctx, req, res);
             return;
@@ -99,7 +99,7 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 		// Handshake
 		WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
 				getWebSocketLocation(req), "binary", true,MAX_WEBSOCKET_FRAME_SIZE);
-		
+
 		handshaker = wsFactory.newHandshaker(req);
 		if (handshaker == null) {
 			WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
@@ -115,7 +115,7 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 		createProxyChannel(ctx.channel(),hostInfo);
 	}
 
-	private void handleWebSocketFrame(ChannelHandlerContext ctx,WebSocketFrame frame) 
+	private void handleWebSocketFrame(ChannelHandlerContext ctx,WebSocketFrame frame)
 			throws IOException {
 		// Check for closing frame
 		if (frame instanceof CloseWebSocketFrame) {
@@ -130,7 +130,7 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 			throw new UnsupportedOperationException(String.format(
 					"%s frame types not supported", frame.getClass().getName()));
 		}
-	
+
 		WebsockifyChannel c=ctx.channel().attr(WebsockifyChannel.SESSION_KEY).get();
 		if(c!=null){
 			c.messageReceivedCount++;
@@ -169,10 +169,10 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 
 	//
 	@Override
-    public void channelInactive(ChannelHandlerContext ctx) 
+    public void channelInactive(ChannelHandlerContext ctx)
     		throws Exception {
 		if(logger.isDebugEnabled()){
-			logger.debug("channelInactive:"+ctx.channel());	
+			logger.debug("channelInactive:"+ctx.channel());
 		}
 		WebsockifyChannel c=ctx.channel().attr(WebsockifyChannel.SESSION_KEY).get();
 		if(c!=null){
@@ -184,7 +184,7 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		if(logger.isDebugEnabled()){
-			logger.debug("channelActive:"+ctx.channel());	
+			logger.debug("channelActive:"+ctx.channel());
 		}
 		if(server.getHostInfoProvider()==null){
 			logger.error("can not find HostInfoProvider.");
@@ -229,7 +229,12 @@ public class WebsockifyHandler extends SimpleChannelInboundHandler<Object> {
 		server.addChannel(wsChannel);
 		channel.attr(WebsockifyChannel.SESSION_KEY).set(wsChannel);
 		if(logger.isDebugEnabled()){
-			logger.debug("session created:"+wsChannel);	
+			logger.debug("session created:"+wsChannel);
 		}
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+		messageReceived(channelHandlerContext,o);
 	}
 }

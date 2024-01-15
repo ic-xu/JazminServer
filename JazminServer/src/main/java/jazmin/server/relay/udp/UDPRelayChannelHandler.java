@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.server.relay.udp;
 
@@ -28,7 +28,7 @@ public class UDPRelayChannelHandler extends SimpleChannelInboundHandler<Datagram
 		this.relayChannel=relayChannel;
 	}
 	//
-	@Override
+
 	protected void messageReceived(ChannelHandlerContext ctx,
 			DatagramPacket pkg) throws Exception {
 		ByteBuf buf= Unpooled.copiedBuffer(pkg.content());
@@ -40,7 +40,7 @@ public class UDPRelayChannelHandler extends SimpleChannelInboundHandler<Datagram
 		if(cause instanceof IOException){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
 	}
 	//
@@ -52,5 +52,10 @@ public class UDPRelayChannelHandler extends SimpleChannelInboundHandler<Datagram
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		logger.info("channel inactive :"+ctx.channel());
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
+		messageReceived(channelHandlerContext,datagramPacket);
 	}
 }

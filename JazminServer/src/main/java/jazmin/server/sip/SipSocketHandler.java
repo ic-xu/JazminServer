@@ -16,7 +16,7 @@ import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 import jazmin.server.sip.stack.SipMessageEvent;
 /**
- * 
+ *
  * @author yama
  *
  */
@@ -24,29 +24,29 @@ import jazmin.server.sip.stack.SipMessageEvent;
 public final class SipSocketHandler extends SimpleChannelInboundHandler<SipMessageEvent> {
 	//
 	private static Logger logger=LoggerFactory.get(SipSocketHandler.class);
-	
+
 	SipServer sipServer;
 	public SipSocketHandler(SipServer server){
 		this.sipServer=server;
 	}
 	//
 	@Override
-    public void channelInactive(ChannelHandlerContext ctx) 
+    public void channelInactive(ChannelHandlerContext ctx)
     		throws Exception {
 		sipServer.removeChannel(ctx.channel().id().asShortText());
 		if(logger.isDebugEnabled()){
-			logger.debug("channelInactive:"+ctx.channel());	
+			logger.debug("channelInactive:"+ctx.channel());
 		}
 	}
 	//
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) 
+	public void channelActive(ChannelHandlerContext ctx)
 			throws Exception {
 		SipChannel channel=new SipChannel();
 		if(ctx.channel() instanceof NioSocketChannel){
 			channel.transport="tcp";
 		}else{
-			channel.transport="udp";		
+			channel.transport="udp";
 		}
 		SslHandler sslHandler=ctx.pipeline().get(SslHandler.class);
 		if(sslHandler!=null){
@@ -69,33 +69,38 @@ public final class SipSocketHandler extends SimpleChannelInboundHandler<SipMessa
 		sa=(InetSocketAddress) ctx.channel().remoteAddress();
 		if(sa!=null){
 			channel.remoteAddress=sa.getAddress().getHostAddress();
-			channel.remotePort=sa.getPort();	
+			channel.remotePort=sa.getPort();
 		}
 		sipServer.addChannel(channel);
 		ctx.channel().attr(SipChannel.SESSION_KEY).set(channel);
 		//
 		if(logger.isDebugEnabled()){
-			logger.debug("channelActive:"+ctx.channel());	
+			logger.debug("channelActive:"+ctx.channel());
 		}
 	}
 	 //
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) 
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
     		throws Exception {
     	if(cause instanceof IOException){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
     	ctx.close();
     }
 	//--------------------------------------------------------------------------
-	@Override
+
 	public void messageReceived(
 			ChannelHandlerContext ctx,
 			SipMessageEvent event) throws Exception {
 		SipChannel c=ctx.channel().attr(SipChannel.SESSION_KEY).get();
 		c.messageReceivedCount++;
 		sipServer.messageReceived(event.getConnection(),event.getMessage());
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, SipMessageEvent sipMessageEvent) throws Exception {
+		messageReceived(channelHandlerContext,sipMessageEvent);
 	}
 }

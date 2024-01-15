@@ -9,7 +9,7 @@ import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 
 /**
- * 
+ *
  * @author yama
  *
  */
@@ -21,8 +21,8 @@ public class CdnServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 		this.cdnServer=server;
 	}
 	//
-    @Override
-    public void messageReceived(ChannelHandlerContext ctx, HttpObject request) 
+
+    public void messageReceived(ChannelHandlerContext ctx, HttpObject request)
     		throws Exception {
     	cdnServer.processRequest(ctx, request);
     }
@@ -42,4 +42,9 @@ public class CdnServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     		rw.channelClosed();
     	}
     }
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, HttpObject httpObject) throws Exception {
+		messageReceived(channelHandlerContext,httpObject);
+	}
 }

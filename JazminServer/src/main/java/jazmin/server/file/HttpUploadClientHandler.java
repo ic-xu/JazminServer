@@ -17,14 +17,14 @@ public class HttpUploadClientHandler extends SimpleChannelInboundHandler<HttpObj
 	public static final  AttributeKey<String> ATTR_RESULT=AttributeKey.valueOf("r");
 	//
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, HttpObject msg) {
+    public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
         if (msg instanceof HttpContent) {
             HttpContent chunk = (HttpContent) msg;
             String response=(chunk.content().toString(CharsetUtil.UTF_8));
             if(!response.isEmpty()){
                 ctx.channel().attr(ATTR_RESULT).set(response);
             }
-            ctx.channel().close();    	
+            ctx.channel().close();
         }
     }
     @Override

@@ -5,18 +5,19 @@ import java.io.IOException;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
 import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 import jazmin.server.msg.codec.RequestMessage;
 /**
- * 
+ *
  * @author yama
  * 26 Dec, 2014
  */
 @Sharable
-public class TcpServerHandler extends ChannelHandlerAdapter{
+public class TcpServerHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(TcpServerHandler.class);
 	private static final AttributeKey<Session> SESSION_KEY=
 								AttributeKey.valueOf("s");
@@ -26,23 +27,24 @@ public class TcpServerHandler extends ChannelHandlerAdapter{
 	}
 	//
 	@Override
-    public void channelInactive(ChannelHandlerContext ctx) 
+    public void channelInactive(ChannelHandlerContext ctx)
     		throws Exception {
     	Session session=ctx.channel().attr(SESSION_KEY).get();
     	messageServer.sessionDisconnected(session);
 	}
 	//
 	@Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) 
+    public void channelRead0(ChannelHandlerContext ctx, Object msg)
     		throws Exception {
 		//
 		RequestMessage reqMessage=(RequestMessage) msg;
 		Session session=ctx.channel().attr(SESSION_KEY).get();
 		messageServer.receiveMessage(session, reqMessage);
 	}
+
 	//
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) 
+	public void channelActive(ChannelHandlerContext ctx)
 			throws Exception {
 		Session session=new Session(new NettyNetworkChannel(ctx.channel()));
 		ctx.channel().attr(SESSION_KEY).set(session);
@@ -52,19 +54,19 @@ public class TcpServerHandler extends ChannelHandlerAdapter{
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
 			throws Exception {
-		if(evt instanceof IdleStateEvent){  
+		if(evt instanceof IdleStateEvent){
 			Session session=ctx.channel().attr(SESSION_KEY).get();
 			messageServer.sessionIdle(session);
-        }    
+        }
 	}
     //
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) 
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
     		throws Exception {
     	if(cause instanceof IOException){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
     	ctx.close();
     }

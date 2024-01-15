@@ -22,7 +22,7 @@ public class RelayServerTcpTest {
 		 */
 		public static void main(String[] args)throws Exception {
 			RelayServer server=new RelayServer();
-			server.setHostAddress("10.44.218.119");
+			server.setHostAddress("172.20.217.229");
 			server.setIdleTime(30000);
 			Jazmin.addServer(new ConsoleServer());
 			Jazmin.addServer(server);

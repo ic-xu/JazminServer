@@ -58,7 +58,7 @@ public class FileClient {
 	AsyncHttpClientConfig.Builder clientConfigBuilder;
 	AsyncHttpClientConfig clientConfig;
 	AsyncHttpClient asyncHttpClient;
-	
+
 	//
 	public FileClient() {
 		clientConfigBuilder=new Builder();
@@ -78,7 +78,7 @@ public class FileClient {
 		IOWorker worker=new IOWorker("FileClientIO",1);
 		group = new NioEventLoopGroup(1,worker);
 		bootstrap = new Bootstrap();
-		factory= new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); 
+		factory= new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 		// Disk if MINSIZE exceed
 	    DiskFileUpload.deleteOnExitTemporaryFile = true; // should delete file on exit (in normal exit)
 	    DiskFileUpload.baseDirectory = null; // system temp directory
@@ -100,11 +100,11 @@ public class FileClient {
 		bootstrap.channel(NioSocketChannel.class)
 		.option(ChannelOption.SO_KEEPALIVE, true)
 		.option(ChannelOption.TCP_NODELAY, true)
-        .option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32*1024) 
+        .option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32*1024)
         .option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8*1024)
 		.handler(channelInitializer);
 	}
-	
+
 	//
 	/**
 	 * upload file to server
@@ -124,14 +124,14 @@ public class FileClient {
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(host, port));
         Channel channel = future.sync().channel();
         HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, path);
-        
+
         HttpPostRequestEncoder bodyRequestEncoder =
-                new HttpPostRequestEncoder(factory, request, true); 
+                new HttpPostRequestEncoder(factory, request, true);
         bodyRequestEncoder.addBodyFileUpload("file", file, "application/x-zip-compressed", false);
         request = bodyRequestEncoder.finalizeRequest();
-        request.headers().setLong("Content-Length", file.length());
+        request.headers().set("Content-Length", file.length());
         channel.write(request);
-        if (bodyRequestEncoder.isChunked()) { 
+        if (bodyRequestEncoder.isChunked()) {
             channel.write(bodyRequestEncoder);
         }
         channel.flush();
@@ -141,7 +141,7 @@ public class FileClient {
         return result;
     }
 	/**
-	 * 
+	 *
 	 * @author yama
 	 * 9 Apr, 2016
 	 */
@@ -173,11 +173,11 @@ public class FileClient {
 				//
 				try{
 					tempFileOutputStream.flush();
-					tempFileOutputStream.close();		
+					tempFileOutputStream.close();
 				}catch(Exception e){
-					logger.catching(e);	
+					logger.catching(e);
 				}
-				
+
 				if(!file.exists()){
 					Files.move(tempFile.toPath(),file.toPath(), StandardCopyOption.ATOMIC_MOVE);
 					if(logger.isDebugEnabled()){
@@ -207,7 +207,7 @@ public class FileClient {
 				if(!success){
 					logger.error("can not mkdir {}",tempFile.getParentFile());
 				}
-			}	
+			}
 			tempFile.createNewFile();
 			tempFileOutputStream=new FileOutputStream(tempFile);
 			return STATE.CONTINUE;
@@ -244,7 +244,7 @@ public class FileClient {
 				logger.catching(e);
 			}
 		}
-		
+
 	}
 	/**
 	 * download file from server

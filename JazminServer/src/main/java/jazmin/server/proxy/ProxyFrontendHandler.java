@@ -2,20 +2,15 @@ package jazmin.server.proxy;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.*;
 import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 /**
- * 
+ *
  * @author yama
  *
  */
-public class ProxyFrontendHandler extends ChannelHandlerAdapter {
+public class ProxyFrontendHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(ProxyFrontendHandler.class);
     private volatile Channel outboundChannel;
     private ProxyServer server;
@@ -77,6 +72,11 @@ public class ProxyFrontendHandler extends ChannelHandlerAdapter {
                 }
             });
         }
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        channelRead(channelHandlerContext,o);
     }
 
     @Override

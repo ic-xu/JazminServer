@@ -3,19 +3,16 @@ package jazmin.server.websockify;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 /**
- * 
+ *
  * @author yama
  *
  */
-public class WebsockifyBackendHandler extends ChannelHandlerAdapter {
+public class WebsockifyBackendHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(WebsockifyBackendHandler.class);
     private final WebsockifyChannel websockifyChannel;
     public WebsockifyBackendHandler(WebsockifyChannel websockifyChannel) {
@@ -42,6 +39,11 @@ public class WebsockifyBackendHandler extends ChannelHandlerAdapter {
                 }
             }
         });
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        	channelRead(channelHandlerContext,o);
     }
 
     @Override

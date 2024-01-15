@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.server.console;
 
@@ -139,7 +139,7 @@ public class ConsoleServer extends Server{
 		registerCommand(new UpTimeCommand());
 		registerCommand(new CutCommand());
 		registerCommand(new TRCommand());
-		
+
 	}
 	//--------------------------------------------------------------------------
 	void loadCommandHistory(){
@@ -190,14 +190,13 @@ public class ConsoleServer extends Server{
 	//
 	/**
 	 * register command to console server
-	 * @param cmd
 	 */
 	public void registerCommand(Class<? extends ConsoleCommand> commandClass){
 		try {
 			registerCommand(commandClass.newInstance());
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
-		} 
+		}
 	}
 	//
 	private void registerCommand(ConsoleCommand cmd){
@@ -228,7 +227,7 @@ public class ConsoleServer extends Server{
     	});
 		return sessions;
 	}
-	
+
 	/**
 	 * @return the defaultAuthenticator
 	 */
@@ -236,7 +235,7 @@ public class ConsoleServer extends Server{
 		return defaultAuthenticator;
 	}
 	/**
-	 * 
+	 *
 	 * @param a
 	 */
 	public void setAuthenticator(Authenticator a){

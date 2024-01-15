@@ -46,7 +46,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		this.messageServer = messageServer;
 	}
 
-	@Override
 	public void messageReceived(ChannelHandlerContext ctx, Object msg) {
 		if (msg instanceof FullHttpRequest) {
 			handleHttpRequest(ctx, (FullHttpRequest) msg);
@@ -215,5 +214,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		RequestMessage req = messageServer.codecFactory.decode(receiveBuffer, messageServer.networkTrafficStat);
 		return req;
 	}
-	
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+		messageReceived(channelHandlerContext,o);
+	}
 }

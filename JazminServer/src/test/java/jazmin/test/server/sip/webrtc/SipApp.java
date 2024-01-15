@@ -25,7 +25,7 @@ public class SipApp extends Application{
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
-		String ipAddress="10.0.0.18";
+		String ipAddress="127.0.0.1";
 		LoggerFactory.setLevel("DEBUG");
 		SipServer server=new SipServer();
 		server.setHostAddress(ipAddress);

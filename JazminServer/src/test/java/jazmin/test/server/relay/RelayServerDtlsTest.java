@@ -22,7 +22,7 @@ public class RelayServerDtlsTest {
 		 */
 		public static void main(String[] args)throws Exception {
 			RelayServer server=new RelayServer();
-			server.setHostAddress("172.20.208.127");
+			server.setHostAddress("127.0.0.1");
 			server.setIdleTime(30000);
 			Jazmin.addServer(server);
 			Jazmin.start();

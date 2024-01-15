@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.core.monitor;
 
@@ -14,10 +14,6 @@ import jazmin.log.LoggerFactory;
 import jazmin.misc.InfoBuilder;
 import jazmin.util.JSONUtil;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.AsyncHttpClientConfig.Builder;
-import com.ning.http.client.providers.netty.NettyAsyncHttpProviderConfig;
 
 /**
  * @author yama
@@ -26,9 +22,7 @@ import com.ning.http.client.providers.netty.NettyAsyncHttpProviderConfig;
 public class Monitor extends Lifecycle implements Runnable{
 	private static Logger logger=LoggerFactory.get(Monitor.class);
 	//
-	AsyncHttpClientConfig.Builder clientConfigBuilder;
-	AsyncHttpClientConfig clientConfig;
-	AsyncHttpClient asyncHttpClient;
+
 	private String monitorUrl;
 	private Thread monitorThead;
 	private List<MonitorAgent>monitorAgents;
@@ -58,11 +52,6 @@ public class Monitor extends Lifecycle implements Runnable{
 		if(monitorUrl==null){
 			return;
 		}
-		clientConfigBuilder=new Builder();
-		clientConfigBuilder.setUserAgent("JazminMonitorAgent");
-		clientConfigBuilder.setAsyncHttpClientProviderConfig(new NettyAsyncHttpProviderConfig());
-		clientConfig=clientConfigBuilder.build();
-		asyncHttpClient = new AsyncHttpClient(clientConfig);
 		//
 		for(MonitorAgent ma:monitorAgents){
 			try{
@@ -117,11 +106,12 @@ public class Monitor extends Lifecycle implements Runnable{
 		}
 		String instanceName=Jazmin.getServerName();
 		long time=System.currentTimeMillis();
-		asyncHttpClient.preparePost(monitorUrl
-				+"?instance="+instanceName
-				+"&time="+time
-				+"&type="+type
-				+"&name="+name).setBody(data).execute();
+		// TODO 发送http 数据包
+//		asyncHttpClient.preparePost(monitorUrl
+//				+"?instance="+instanceName
+//				+"&time="+time
+//				+"&type="+type
+//				+"&name="+name).setBody(data).execute();
 	}
 	//
 	@Override

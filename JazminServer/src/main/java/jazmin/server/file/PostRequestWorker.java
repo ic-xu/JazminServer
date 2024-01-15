@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.server.file;
 
@@ -63,7 +63,7 @@ public class PostRequestWorker extends RequestWorker {
 		super(cdnServer, ctx, request);
 		this.fileUpload=fileUpload;
 		decoder = new HttpPostRequestDecoder(factory, request);
-		fileUpload.totalBytes=request.headers().getLong("Content-Length",0);
+		fileUpload.totalBytes=request.headers().getInt("Content-Length",0);
 	}
 	@Override
 	public void channelClosed() {
@@ -109,9 +109,9 @@ public class PostRequestWorker extends RequestWorker {
 					clean();
 				}
 			}
-			
-		} 
-		
+
+		}
+
 	}
 	//
 	private void clean(){
@@ -137,13 +137,13 @@ public class PostRequestWorker extends RequestWorker {
 		} catch (Exception e) {
 			logger.catching(e);
 			sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
-		}		
+		}
 	}
 	//
 	/**
 	 * Example of reading request by chunk and getting values from chunk to
 	 * chunk
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void readHttpDataChunkByChunk() throws IOException {
 		while (decoder.hasNext()) {
@@ -175,7 +175,7 @@ public class PostRequestWorker extends RequestWorker {
 				}
 				clean();
 			}
-		}	
+		}
 	}
 	//
 	private File createFile(String fileName) throws IOException{

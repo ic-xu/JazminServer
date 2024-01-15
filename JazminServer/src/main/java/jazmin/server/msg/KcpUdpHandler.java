@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jazmin.server.msg;
 
@@ -18,12 +18,12 @@ import jazmin.log.LoggerFactory;
 public class KcpUdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 	private static Logger logger=LoggerFactory.get(KcpUdpHandler.class);
 	KcpChannelManager kcpChannelManager;
-	
+
 	public KcpUdpHandler(KcpChannelManager kcpChannelManager) {
 		this.kcpChannelManager=kcpChannelManager;
 	}
 	//
-	@Override
+
 	protected void messageReceived(ChannelHandlerContext ctx,
 			DatagramPacket pkg) throws Exception {
 		kcpChannelManager.receiveDatagramPacket(ctx.channel(),pkg);
@@ -35,8 +35,13 @@ public class KcpUdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 		if(cause instanceof IOException){
     		logger.warn("exception on channal:"+ctx.channel()+","+cause.getMessage());
     	}else{
-    		logger.error("exception on channal:"+ctx.channel(),cause);	
+    		logger.error("exception on channal:"+ctx.channel(),cause);
     	}
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
+		messageReceived(channelHandlerContext,datagramPacket);
 	}
 }
 

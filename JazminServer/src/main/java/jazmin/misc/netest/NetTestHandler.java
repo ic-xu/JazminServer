@@ -4,14 +4,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import jazmin.log.Logger;
 import jazmin.log.LoggerFactory;
 /**
- * 
+ *
  * @author yama
  * 9 May, 2015
  */
-public class NetTestHandler extends ChannelHandlerAdapter {
+public class NetTestHandler extends SimpleChannelInboundHandler {
 	private static Logger logger=LoggerFactory.get(NetTestHandler.class);
 	NetTestClient netTestClient;
 	public NetTestHandler(NetTestClient client) {
@@ -44,7 +45,13 @@ public class NetTestHandler extends ChannelHandlerAdapter {
 			logger.catching(e);
 		}
     }
-    //
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+		channelRead(channelHandlerContext,o);
+	}
+
+	//
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     	logger.catching(cause);
